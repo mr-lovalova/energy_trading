@@ -1,1 +1,1 @@
-"""Scripts to download or generate data"""
+"""scripts to process or generate data"""
