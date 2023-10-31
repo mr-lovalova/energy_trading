@@ -18,6 +18,7 @@ def make_dataset(path="data/"):
         how="left",
     )
     merged.to_csv(os.path.join(path, "processed/dataset.csv"))
+    print(merged)
 
 
 if __name__ == "__main__":
