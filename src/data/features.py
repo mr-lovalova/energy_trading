@@ -35,12 +35,12 @@ def parse_measurement(measurement):
     lng, _ = measurement["geometry"]["coordinates"]
     time = measurement["properties"]["observed"]
     value = measurement["properties"]["value"]
-    dct = {
+    out = {
         COLUMNS["Time"]: time,
         FEATURES[feature]: float(value),
         COLUMNS["WestDK"]: is_west(float(lng)),
     }
-    return dct
+    return out
 
 
 def is_west(lng):
