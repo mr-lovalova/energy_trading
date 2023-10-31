@@ -11,5 +11,5 @@ def make_df(path):
 def wrangle(df):
     df[COLUMNS["Time"]] = pd.to_datetime(df[COLUMNS["Time"]])
     df[COLUMNS["WestDK"]] = df["PriceArea"].map({"DK1": True, "DK2": False})
-    df.drop(["HourDK", "PriceArea", "SpotPriceEUR"], axis=1, inplace=True)
+    df.drop(["PriceArea", "SpotPriceEUR"], axis=1, inplace=True)
     return df

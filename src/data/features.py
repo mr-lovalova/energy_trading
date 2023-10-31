@@ -13,7 +13,9 @@ def parse_file(path, file, parsed):
     with open(os.path.join(path, file), "r") as f:
         for line in f:
             measurement = json.loads(line)
-            if measurement["properties"]["parameterId"] not in FEATURES:
+            if measurement["properties"]["parameterId"] not in FEATURES or is_greenland(
+                measurement["geometry"]["coordinates"][1]
+            ):
                 continue
             parsed.append(parse_measurement(measurement))
 
@@ -35,6 +37,11 @@ def is_west(lng):
     # naive guess, take into account earth is round?
     guess = 10.9
     return lng < guess
+
+
+def is_greenland(lat):
+    guess = 58
+    return lat > guess
 
 
 def wrangle(df):
