@@ -17,7 +17,7 @@ def make_dataset(path="data/"):
         right_on=[COLUMNS["Time"], COLUMNS["WestDK"]],
         how="left",
     )
-    merged.to_csv(os.path.join(path, "processed/dataset.csv"))
+    merged.to_csv(os.path.join(path, "interim/dataset.csv"))
     print(merged)
 
 

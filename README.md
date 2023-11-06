@@ -2,6 +2,7 @@ data folder is structured like so:
 
 ```
 ├── processed
+├── interim
 └── raw
     ├── metops
     │   ├── 2022-01-01.txt
