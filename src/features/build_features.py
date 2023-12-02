@@ -21,15 +21,23 @@ y = df.pivot_table(
 # X = df.pivot_table(index="HourUTC", columns="StationID", values="RadiationLastHourUTC")
 # y = df.pivot_table(index="HourUTC", columns="MunicipalityNo", values="SolarMWh")
 
-X = X.dropna(axis=0, how="all")
-y = y.dropna(axis=1, how="all")
+# remove ChristiansØ da de ikke har nogen produktion, og korrumperer dataen
+y.drop(columns=[411], inplace=True)
+
+# removing rows with missing data entries mostly relevant for X for missing measurements
+X = X.dropna(axis=0)
+y = y.dropna(axis=0)
+
+common_index = X.index.intersection(y.index)
+X = X.loc[common_index]
+y = y.loc[common_index]
+
 # Convert DataFrames to PyTorch tensors
 X_tensor = torch.Tensor(X.values)
 y_tensor = torch.Tensor(y.values)
 
 print(X)
 print(y)
-
 print(df)
 
 X.to_excel("X.xlsx")
