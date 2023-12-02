@@ -33,12 +33,11 @@ X = X.loc[common_index]
 y = y.loc[common_index]
 
 # Convert DataFrames to PyTorch tensors
-X_tensor = torch.Tensor(X.values)
-y_tensor = torch.Tensor(y.values)
+# X_tensor = torch.Tensor(X.values, names=X.columns.to_list())
+# y_tensor = torch.Tensor(y.values, names=y.columns.to_list())
+# Convert DataFrames to PyTorch tensors
+X = torch.Tensor(X.values)
+y = torch.Tensor(y.values)
 
 print(X)
 print(y)
-print(df)
-
-X.to_excel("X.xlsx")
-y.to_excel("Y.xlsx")
