@@ -3,11 +3,12 @@ import pandas as pd
 import os
 import torch
 import pandas as pd
+import torch
+from sklearn.preprocessing import StandardScaler
 
 path = "data/"
-path = os.path.join(path, "interim/WIND_PRODUCTION.csv")
 # path = os.path.join(path, "interim/SOLAR_PRODUCTION.csv")
-df = pd.read_csv(path)
+df = pd.read_csv(os.path.join(path, "interim/WIND_PRODUCTION.csv"))
 # df["StationID"] = df["StationID"].astype(str).str.lstrip("0")
 # Convert the StationID column back to numeric type
 # df["StationID"] = pd.to_numeric(df["StationID"], errors="coerce")
@@ -32,12 +33,17 @@ common_index = X.index.intersection(y.index)
 X = X.loc[common_index]
 y = y.loc[common_index]
 
-# Convert DataFrames to PyTorch tensors
-# X_tensor = torch.Tensor(X.values, names=X.columns.to_list())
-# y_tensor = torch.Tensor(y.values, names=y.columns.to_list())
-# Convert DataFrames to PyTorch tensors
 X = torch.Tensor(X.values)
 y = torch.Tensor(y.values)
+X.to(dtype=torch.float32)
 
 print(X)
 print(y)
+scaler = StandardScaler()
+scaler.fit(X)
+X_scaled = scaler.transform(X)
+
+print(X_scaled)
+print(y)
+# torch.save(X_scaled, os.path.join(path, "processed/production/X_wind.pt"))
+# torch.save(y, os.path.join(path, "processed/production/y_wind.pt"))
