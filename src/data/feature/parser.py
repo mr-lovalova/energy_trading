@@ -22,10 +22,11 @@ class MetopsParser(ABC):
 
     @staticmethod
     def is_valid(measurement):
-        coordinates = measurement["geometry"]["coordinates"]
-        if not coordinates:
+        try:
+            coordinates = measurement["geometry"]["coordinates"]
+            _, lat = coordinates
+        except TypeError:
             return False  # or known station??
-        _, lat = coordinates
         if MetopsParser.is_greenland(lat):
             return False
         return True

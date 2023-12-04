@@ -1,5 +1,3 @@
-from pathlib import Path
-from abc import ABC, abstractmethod
 import pandas as pd
 from config import COLUMNS
 from helpers import ObjectFactory
@@ -14,6 +12,9 @@ def set_time(df):
 
 def solar_wrangler(df, **ignored):
     df = set_time(df)
+    df = df.groupby("StationID").apply(lambda group: group.ffill().bfill())
+    df = df.reset_index(level="StationID", drop=True)
+    df.drop_duplicates()
     # df = df.groupby(["StationID"], group_keys=True).apply(lambda x: x)
     return df
 
@@ -21,6 +22,9 @@ def solar_wrangler(df, **ignored):
 def wind_wrangler(df, **ignored):
     df = set_time(df)
     # df = df.groupby(["StationID"], group_keys=True).apply(lambda x: x)
+    df = df.groupby("StationID").apply(lambda group: group.ffill().bfill())
+    df = df.reset_index(level="StationID", drop=True)
+    df.drop_duplicates()
     return df
 
 

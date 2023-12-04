@@ -16,9 +16,9 @@ def make_dataset(path="data/", feat="WIND", pred="WIND_PRODUCTION"):
     print(x_df)
 
     merged = pd.merge(x_df, y_df, how="inner", left_index=True, right_index=True)
-    merged = merged.dropna()
+    # merged = merged.dropna()
     print(merged)
-    merged.to_csv(os.path.join(path, f"interim/{pred}.csv"))
+    merged.to_csv(os.path.join(path, f"interim/{pred}.csv"))  # chunks?
     # merged.to_excel(os.path.join(path, f"interim/{pred}.xlsx"))
 
 

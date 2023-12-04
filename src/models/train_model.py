@@ -7,13 +7,14 @@ from loops import test_loop, train_loop
 from model import model
 import matplotlib.pyplot as plt
 
-TEST_SPLIT = 0.1
-VALID_SPLIT = 0.15
+TEST_SPLIT = 0.025
+VALID_SPLIT = 0.5
 
 # HYPERPARAMETERS
 BATCH_SIZE = 128
 LEARNING_RATE = 1e-3
-EPOCHS = 10000
+WEIGHT_DECAY = 1e-5
+EPOCHS = 4000
 
 
 test_size = int(len(dataset) * TEST_SPLIT)
@@ -27,15 +28,15 @@ train_loader = DataLoader(train_data, batch_size=BATCH_SIZE, shuffle=True)
 valid_loader = DataLoader(valid_data, batch_size=BATCH_SIZE, shuffle=True)
 test_loader = DataLoader(test_data, batch_size=BATCH_SIZE, shuffle=True)
 
-print(valid_loader)
 loss_fn = nn.MSELoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE)
+optimizer = torch.optim.SGD(
+    model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY
+)
 
 test_loss_values = []
 for t in range(EPOCHS):
     print(f"Epoch {t+1}\n-------------------------------")
     train_loop(train_loader, model, loss_fn, optimizer)
-    # test_loop(test_loader, model, loss_fn)
     avg_test_loss, test_loss_epoch = test_loop(test_loader, model, loss_fn)
     test_loss_values.extend(test_loss_epoch)
 print("Done!")
@@ -44,5 +45,45 @@ print("Done!")
 plt.plot(test_loss_values, label="Test Loss")
 plt.xlabel("Batch")
 plt.ylabel("MWh Error")
+plt.legend()
+plt.show()
+
+
+X, y = next(iter(test_loader))
+model.eval()
+pred = model(X)
+print("PREDICTION")
+print(pred)
+print("Y")
+print(y)
+
+import numpy as np
+
+example_idx = 0
+single_example_pred = pred[example_idx]
+single_example_ground_truth = y[example_idx]
+
+# Plotting
+plt.figure(figsize=(10, 6))
+
+# Plotting ground truth bars
+plt.bar(
+    np.arange(len(single_example_ground_truth)),
+    single_example_ground_truth,
+    label="Ground Truth",
+)
+
+# Plotting prediction markers
+plt.plot(
+    np.arange(len(single_example_pred)),
+    single_example_pred.detach().numpy(),
+    "rx",
+    markersize=8,
+    label="Prediction",
+)
+
+plt.xlabel("Output Dimension")
+plt.ylabel("Values")
+plt.title("Comparison between Prediction and Ground Truth for a Single Example")
 plt.legend()
 plt.show()
