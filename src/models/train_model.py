@@ -16,7 +16,7 @@ WEIGHT_DECAY = 1e-5
 EPOCHS = 8000
 
 # MODEL
-NAME = "wind_pressure"
+NAME = "wind"
 TYPE = "production"
 YEAR = "2022"
 DATA_PATH = f"data/processed/{TYPE}/{YEAR}/"
@@ -30,7 +30,18 @@ train_loader, valid_loader, test_loader = dataset.get(
 
 
 num_features, num_target = helpers.get_num_input_output(test_loader)
-model = Model(num_features)
+
+input_dicts = []
+for xs in num_features:
+    input = {
+        "NUM_FEATURES": xs,
+        "OUTPUT_UNITS": 64,
+        "DROPOUT": 0.0,
+    }
+    input_dicts.append(input)
+
+
+model = Model(*input_dicts)
 
 loss_fn = nn.MSELoss()
 optimizer = torch.optim.SGD(

@@ -33,8 +33,7 @@ pred = model(*X)
 example_idx = 0
 single_example_pred = pred[example_idx]
 single_example_ground_truth = y[example_idx]
-# test_loss_values = [torch.mean(val).detach().numpy() for val in test_loss_values]
-print(test_loss_values[0].shape)
+
 # Plotting
 plt.figure(figsize=(24, 6))
 
@@ -59,19 +58,19 @@ plt.plot(
 plt.bar(
     np.arange(len(single_example_pred)),
     torch.mean(y, dim=0).detach().numpy(),
-    label="Avg production per municipality",
+    label="Avg MWh production per municipality",
 )
 
 plt.bar(
     np.arange(len(single_example_pred)),
     test_loss_values[0],
-    label="Avg loss per municipality",
+    label="Avg MWh error per municipality",
     color="purple",
 )
 
 plt.xlabel("Output Dimension")
 plt.ylabel("Mwh")
-plt.title("Comparison between Prediction and Ground Truth for a Single Example")
+plt.title("Comparison between prediction and ground truth")
 plt.legend()
 plt.savefig(MODEL_PATH + "avg_err.png")
 
