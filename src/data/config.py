@@ -20,11 +20,13 @@ COLUMNS = {
 
 FEATURES = {
     "WIND": {
-        "wind_speed_past1h": "WindSpeedUTC",
-        "wind_dir_past1h": "WindDir",
-        "temp_mean_past1h": "Temperature",
-        "precip_past1h": "Precip",
-        "humidity_past1h": "Humidity",
+        "wind_speed_past1h": "WindSpeed",
+        # "wind_dir_past1h": "WindDir",
+        # "temp_mean_past1h": "Temperature",
+        "pressure": "Pressure",
+        # "precip_past1h": "Precip",
+        # "humidity_past1h": "Humidity",
+        "radia_glob_past1h": "RadiationLastHour",
     },
     "SOLAR": {
         "radia_glob_past1h": "RadiationLastHourUTC",

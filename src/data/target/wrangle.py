@@ -12,10 +12,18 @@ def set_time(df):
 def price_wrangler(df):
     df = set_time(df)
     print(df)
-    df[COLUMNS["WestDK"]] = df["PriceArea"].map({"DK1": True, "DK2": False})
-    df.reset_index(inplace=True)
-    df.set_index("HourUTC", inplace=True)
-    df = df.dropna()
+    # df[COLUMNS["WestDK"]] = df["PriceArea"].map({"DK1": True, "DK2": False})
+    # df.reset_index(inplace=True)
+    df = df[df["PriceArea"].isin(["DK1", "DK2"])]
+    df = df.drop(
+        columns=[
+            "HourDK",
+            "SpotPriceEUR",
+        ],
+        axis=1,
+    )
+    # df.set_index(COLUMNS["Time"], inplace=True)
+    # df = df.dropna()
     print(df)
     return df
 
@@ -24,7 +32,11 @@ def wind_production_wrangler(df):
     df = set_time(df)
     df = df[COLUMNS["WIND_PRODUCTION"]]
     df["WindProduction"] = df[
-        ["OffshoreWindLt100MW_MWh", "OffshoreWindGe100MW_MWh", "OnshoreWindMWh"]
+        [
+            "OffshoreWindLt100MW_MWh",
+            "OffshoreWindGe100MW_MWh",
+            "OnshoreWindMWh",
+        ]  ###
     ].sum(axis=1)
     df = df.drop(
         columns=[

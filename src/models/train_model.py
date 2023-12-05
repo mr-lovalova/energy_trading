@@ -1,89 +1,61 @@
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
-from torch.utils.data import random_split
-from dataset import dataset
-from loops import test_loop, train_loop
-from model import model
+import dataset
+from loops import validation_loop, train_loop
+from model import Model
 import matplotlib.pyplot as plt
+import numpy as np
+import helpers
 
-TEST_SPLIT = 0.025
-VALID_SPLIT = 0.5
+TEST_SPLIT = 0.05
+VALID_SPLIT = 0.05
 
 # HYPERPARAMETERS
-BATCH_SIZE = 128
 LEARNING_RATE = 1e-3
 WEIGHT_DECAY = 1e-5
-EPOCHS = 4000
+EPOCHS = 8000
 
+# MODEL
+NAME = "wind_pressure"
+TYPE = "production"
+YEAR = "2022"
+DATA_PATH = f"data/processed/{TYPE}/{YEAR}/"
+MODEL_PATH = f"model/{NAME}/"
+TARGET = "production"
+FEATURES = ["pressure", "windspeed"]
 
-test_size = int(len(dataset) * TEST_SPLIT)
-valid_size = int(len(dataset) * VALID_SPLIT)
-train_size = len(dataset) - test_size - valid_size
-train_data, valid_data, test_data = random_split(
-    dataset, [train_size, valid_size, test_size]
+train_loader, valid_loader, test_loader = dataset.get(
+    True, DATA_PATH, MODEL_PATH, TARGET, *FEATURES
 )
 
-train_loader = DataLoader(train_data, batch_size=BATCH_SIZE, shuffle=True)
-valid_loader = DataLoader(valid_data, batch_size=BATCH_SIZE, shuffle=True)
-test_loader = DataLoader(test_data, batch_size=BATCH_SIZE, shuffle=True)
+
+num_features, num_target = helpers.get_num_input_output(test_loader)
+model = Model(num_features)
 
 loss_fn = nn.MSELoss()
 optimizer = torch.optim.SGD(
     model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY
 )
 
-test_loss_values = []
+train_loss = []
+test_loss = []
 for t in range(EPOCHS):
     print(f"Epoch {t+1}\n-------------------------------")
-    train_loop(train_loader, model, loss_fn, optimizer)
-    avg_test_loss, test_loss_epoch = test_loop(test_loader, model, loss_fn)
-    test_loss_values.extend(test_loss_epoch)
+    avg_train_loss = train_loop(train_loader, model, loss_fn, optimizer)
+    avg_validation_loss = validation_loop(test_loader, model, loss_fn)
+    test_loss.append(avg_validation_loss)
+    train_loss.append(avg_train_loss)
 print("Done!")
 
+torch.save(model.state_dict(), MODEL_PATH + "model.pt")
+
 # Plotting the Mean Squared Error values
-plt.plot(test_loss_values, label="Test Loss")
-plt.xlabel("Batch")
-plt.ylabel("MWh Error")
+train_loss = [x.detach().numpy() for x in train_loss]
+print(len(test_loss))
+plt.plot(test_loss, label="Validation Loss")
+plt.plot(train_loss, label="train Loss")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
 plt.legend()
-plt.show()
-
-
-X, y = next(iter(test_loader))
-model.eval()
-pred = model(X)
-print("PREDICTION")
-print(pred)
-print("Y")
-print(y)
-
-import numpy as np
-
-example_idx = 0
-single_example_pred = pred[example_idx]
-single_example_ground_truth = y[example_idx]
-
-# Plotting
-plt.figure(figsize=(10, 6))
-
-# Plotting ground truth bars
-plt.bar(
-    np.arange(len(single_example_ground_truth)),
-    single_example_ground_truth,
-    label="Ground Truth",
-)
-
-# Plotting prediction markers
-plt.plot(
-    np.arange(len(single_example_pred)),
-    single_example_pred.detach().numpy(),
-    "rx",
-    markersize=8,
-    label="Prediction",
-)
-
-plt.xlabel("Output Dimension")
-plt.ylabel("Values")
-plt.title("Comparison between Prediction and Ground Truth for a Single Example")
-plt.legend()
+plt.savefig(MODEL_PATH + "loss.png")
 plt.show()

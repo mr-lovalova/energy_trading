@@ -21,6 +21,11 @@ def solar_wrangler(df, **ignored):
 
 def wind_wrangler(df, **ignored):
     df = set_time(df)
+    print(df)
+    df = df[df.index.minute == 0]
+
+    # Reset index after filtering
+    # df.reset_index(drop=True, inplace=True)
     # df = df.groupby(["StationID"], group_keys=True).apply(lambda x: x)
     df = df.groupby("StationID").apply(lambda group: group.ffill().bfill())
     df = df.reset_index(level="StationID", drop=True)
