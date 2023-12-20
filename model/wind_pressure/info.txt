@@ -1,1 +1,0 @@
-Average test loss: 1.4278311729431152 MWh

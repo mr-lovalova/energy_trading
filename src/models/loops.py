@@ -48,7 +48,7 @@ def test_loop(dataloader, model, loss_fn):
     num_batches = len(dataloader)
     test_loss_values = []
     avg_test_loss = []
-
+    print("NUM BATCHES:", num_batches)
     with torch.no_grad():
         for *X, y in dataloader:
             pred = model(*X)
@@ -58,6 +58,15 @@ def test_loop(dataloader, model, loss_fn):
             avg_test_loss.append(torch.mean(test_loss))
     # avg_test_loss = sum(test_loss_values) / num_batches
     avg_test_loss = sum(avg_test_loss) / num_batches
+    production_err = ((torch.sum(pred) - torch.sum(y)) / torch.sum(y)) * 100
+
+    print("PRODUCTION ERR", production_err)
+    print(torch.sum(y, dim=1).shape)
+    print(torch.sum(y, dim=1), torch.sum(pred, dim=1))
+    print(torch.sum(y), torch.sum(y, dim=1))
     print(f"Test Error: \n Avg loss: {avg_test_loss:>8f} \n")
 
-    return avg_test_loss, test_loss_values
+    return (
+        avg_test_loss,
+        test_loss_values,
+    )

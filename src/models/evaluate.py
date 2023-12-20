@@ -1,14 +1,21 @@
 import torch
 import pickle
 from matplotlib import pyplot as plt
-import numpy as np
+
+# import numpy
 from model import Model
+
+# from regression import Model
+import numpy as np
 import helpers
 from loops import test_loop
 from municipalities import MUNICIPALITIES
+from torchinfo import summary
+import seaborn as sns
+
 
 # MODEL
-NAME = "wind_pressure"
+NAME = "sun_temperature"
 MODEL_PATH = f"model/{NAME}/"
 
 
@@ -18,9 +25,24 @@ with open(MODEL_PATH + "test.pkl", "rb") as f:
     test_loader = pickle.load(f)
 
 num_features, num_target = helpers.get_num_input_output(test_loader)
-model = Model(num_features)
 
+# Adjust the input_size according to your model's input
+input_dicts = []
+for xs in num_features:
+    input = {
+        "NUM_FEATURES": xs,
+        "OUTPUT_UNITS": 64,
+        "DROPOUT": 0.0,
+    }
+    input_dicts.append(input)
+
+model = Model(num_target, *input_dicts)
 model.load_state_dict(model_dict)
+
+BATCH_SIZE = 128
+
+input_size = [(BATCH_SIZE, xs) for xs in num_features]
+model_summary = summary(model, input_size=input_size)
 
 loss_fn = torch.nn.MSELoss(reduction="none")
 avg_test_loss, test_loss_values = test_loop(test_loader, model, loss_fn)
@@ -30,11 +52,11 @@ avg_test_loss, test_loss_values = test_loop(test_loader, model, loss_fn)
 model.eval()
 pred = model(*X)
 
-example_idx = 0
+example_idx = 1
 single_example_pred = pred[example_idx]
 single_example_ground_truth = y[example_idx]
 
-# Plotting
+
 plt.figure(figsize=(24, 6))
 
 # Plotting ground truth bars
@@ -68,11 +90,14 @@ plt.bar(
     color="purple",
 )
 
+
 plt.xlabel("Output Dimension")
 plt.ylabel("Mwh")
-plt.title("Comparison between prediction and ground truth")
+plt.title(f"Comparison between prediction and ground truth for {NAME} model")
 plt.legend()
-plt.savefig(MODEL_PATH + "avg_err.png")
-
+plt.savefig(MODEL_PATH + "avg_err4.pdf", format="pdf")
+# plt.show()
 with open(MODEL_PATH + "info.txt", "w") as f:
-    f.write(f"Average test loss: {avg_test_loss} MWh")
+    f.write(
+        f"Average MWh error per municipality: {avg_test_loss} \n" f"{model_summary}"
+    )

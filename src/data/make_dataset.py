@@ -5,7 +5,7 @@ import pandas as pd
 from config import COLUMNS
 
 
-def make_dataset(path="data/", feat="WIND", pred="WIND_PRODUCTION"):
+def make_dataset(path="data/", feat="SOLAR", pred="SOLAR_PRODUCTION"):
     """Assumes your data folder is structures as given by README
     path: path to data folder"""
     x_df = feature.builder(feat, os.path.join(path, "raw/metops2022"))
