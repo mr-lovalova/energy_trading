@@ -14,7 +14,7 @@ from torchinfo import summary
 
 
 # MODEL
-NAME = "sun_temperature"
+NAME = "wind"
 MODEL_PATH = f"models/{NAME}/"
 
 
@@ -30,7 +30,7 @@ input_dicts = []
 for xs in num_features:
     input = {
         "NUM_FEATURES": xs,
-        "OUTPUT_UNITS": 64,
+        "OUTPUT_UNITS": 32,
         "DROPOUT": 0.0,
     }
     input_dicts.append(input)

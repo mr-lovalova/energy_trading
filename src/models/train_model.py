@@ -7,8 +7,9 @@ from loops import validation_loop, train_loop
 # from ray.air import Checkpoint, session
 # from ray.tune.schedulers import ASHAScheduler
 
-# from model import Model
-from regression import Model
+from model import Model
+
+# from regression import Model
 import matplotlib.pyplot as plt
 import helpers
 
@@ -21,14 +22,14 @@ WEIGHT_DECAY = 1e-5
 EPOCHS = 7000  # 6000
 
 # MODEL
-NAME = "regsolar"
+NAME = "solar_precip_temp"
 CREATE_NEW_DATA = True
 TYPE = "production"
 YEAR = "2022_solar"
 DATA_PATH = f"data/processed/{TYPE}/{YEAR}/"
 MODEL_PATH = f"model/{NAME}/"
 TARGET = "production"
-FEATURES = ["radiation"]  # ["radiation", "precip"]
+FEATURES = ["radiation", "precip", "temperature"]
 
 train_loader, valid_loader, test_loader = dataset.get(
     CREATE_NEW_DATA, DATA_PATH, MODEL_PATH, TARGET, *FEATURES
@@ -38,12 +39,6 @@ print(len(train_loader), len(valid_loader), len(test_loader))
 
 num_features, num_target = helpers.get_num_input_output(train_loader)
 print("NUM_TARGET", num_features)
-config = {
-    # "l1": tune.choice([2 ** i for i in range(9)]),
-    # "l2": tune.choice([2 ** i for i in range(9)]),
-    # "lr": tune.loguniform(1e-4, 1e-1),
-    # "batch_size": tune.choice([2, 4, 8, 16])
-}
 
 input_dicts = []
 for xs in num_features:

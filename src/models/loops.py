@@ -58,7 +58,7 @@ def test_loop(dataloader, model, loss_fn):
     # avg_test_loss = sum(test_loss_values) / num_batches
     avg_test_loss = sum(avg_test_loss) / num_batches
 
-    print(f"Test Error: \n Avg loss: {avg_test_loss:>8f}")
+    print(f"Test Error: \n Avg MWh: {avg_test_loss:>8f}")
 
     return (
         avg_test_loss,
